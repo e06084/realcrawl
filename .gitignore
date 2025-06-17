@@ -207,3 +207,4 @@ coverage.xml
 
 .env
 *.egg-info/
+.DS_Store

@@ -5,11 +5,10 @@
 RealCrawl云端域名特征查询服务专注于核心的数据管理功能，提供：
 
 1. **公共特征库**: 存储和查询海量域名布局特征数据（对应生产过程形成特征库）
-2. **HTML标注工具**: 可视化HTML标注界面，支持重标注、检索、对比功能  
+2. **HTML标注工具**: 可视化HTML标注界面，支持重标注、检索功能  
 3. **标注库**: 标注管理，支持：
    - 标注管理（增删改查）
    - 共享到公共库
-   - 对比公共库
 
 ## 技术架构
 
@@ -188,23 +187,16 @@ class LayoutInfo:
 class Annotation:
     id: int                        # 标注ID
     domain: str                    # 域名
+    url: str                       # 页面URL
     layout_id: str                 # 布局ID
     html_content: str              # HTML内容
-    annotations: Dict              # 标注数据（元素标注信息）
+    annotations: str               # 标注数据（字符串格式）
     is_shared: bool                # 是否已分享到公共库
     created_at: datetime           # 创建时间
     updated_at: datetime           # 更新时间
 ```
 
-### 对比结果模型
-```python
-class CompareResult:
-    annotation_id: int             # 标注ID
-    target_domain: str             # 对比目标域名
-    similarity_score: float        # 相似度分数(0-1)
-    differences: List[Dict]        # 差异列表
-    matched_features: List[str]    # 匹配的特征
-```
+
 
 ## 部署说明
 
@@ -251,5 +243,5 @@ docker-compose up -d
 - **索引优化**: domain, created_at复合索引
 
 ### S3/OSS HTML存储  
-- **路径格式**: `html/{domain_hash}/{layout_id}.gz`
+- **路径格式**: `s3://bucket/{domain_hash_id}/{domain}/{layout_id}.html`，如`s3://bucket/1696/01-news.ru/01-news.ru_01.html`
 - **压缩**: gzip压缩HTML内容

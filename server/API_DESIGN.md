@@ -5,7 +5,17 @@
 RealCrawl 云端域名特征查询服务提供以下主要功能模块的API：
 
 1. **特征库** - 公共域名特征查询、管理
-2. **标注库** - 标注管理、分享、对比
+2. **标注库** - 标注管理、分享（支持用户隔离）
+
+## 用户认证
+
+所有标注库API都需要通过middleware进行用户认证，middleware会在HTTP Header中设置用户ID：
+
+```
+X-User-ID: {user_id}
+```
+
+每个用户只能访问自己的标注数据，实现完全的数据隔离。
 
 ## API端点设计
 
@@ -96,6 +106,7 @@ RealCrawl 云端域名特征查询服务提供以下主要功能模块的API：
 **参数**:
 - `query`: string - 搜索关键词
 - `domain`: string - 域名过滤
+- `url`: string - URL过滤
 - `type`: string - 类型过滤 (manual/imported/generated)
 - `status`: string - 状态过滤 (draft/completed/shared)
 - `is_shared`: boolean - 是否已分享
@@ -108,7 +119,9 @@ RealCrawl 云端域名特征查询服务提供以下主要功能模块的API：
     "items": [
         {
             "id": 1,
+            "user_id": "user123",
             "domain": "example.com",
+            "url": "https://example.com/page1",
             "layout_id": "example.com_01",
             "type": "manual",
             "status": "completed",
@@ -118,7 +131,9 @@ RealCrawl 云端域名特征查询服务提供以下主要功能模块的API：
         },
         {
             "id": 2,
+            "user_id": "user123",
             "domain": "test.com",
+            "url": "https://test.com/home",
             "layout_id": "test.com_01",
             "type": "imported",
             "status": "draft",
@@ -141,14 +156,10 @@ RealCrawl 云端域名特征查询服务提供以下主要功能模块的API：
 ```json
 {
     "domain": "example.com",
+    "url": "https://example.com/page1",
     "layout_id": "example.com_01",
     "html_content": "<html>...</html>",
-    "annotations": {
-        "elements": [
-            {"id": "1", "type": "header", "xpath": "//header"},
-            {"id": "2", "type": "main", "xpath": "//main"}
-        ]
-    },
+    "annotations": "<annotation><element id='1' type='header' xpath='//header'/><element id='2' type='main' xpath='//main'/></annotation>",
     "type": "manual",
     "notes": "手动标注的示例页面"
 }
@@ -158,14 +169,11 @@ RealCrawl 云端域名特征查询服务提供以下主要功能模块的API：
 ```json
 {
     "id": 1,
+    "user_id": "user123",
     "domain": "example.com",
+    "url": "https://example.com/page1",
     "layout_id": "example.com_01",
-    "annotations": {
-        "elements": [
-            {"id": "1", "type": "header", "xpath": "//header"},
-            {"id": "2", "type": "main", "xpath": "//main"}
-        ]
-    },
+    "annotations": "<annotation><element id='1' type='header' xpath='//header'/><element id='2' type='main' xpath='//main'/></annotation>",
     "type": "manual",
     "status": "draft",
     "notes": "手动标注的示例页面",
@@ -182,15 +190,12 @@ RealCrawl 云端域名特征查询服务提供以下主要功能模块的API：
 ```json
 {
     "id": 1,
+    "user_id": "user123",
     "domain": "example.com",
+    "url": "https://example.com/page1",
     "layout_id": "example.com_01",
     "html_content": "<html>...</html>",
-    "annotations": {
-        "elements": [
-            {"id": "1", "type": "header", "xpath": "//header"},
-            {"id": "2", "type": "main", "xpath": "//main"}
-        ]
-    },
+    "annotations": "<annotation><element id='1' type='header' xpath='//header'/><element id='2' type='main' xpath='//main'/></annotation>",
     "type": "manual",
     "status": "completed",
     "notes": "手动标注的示例页面",
@@ -206,13 +211,7 @@ RealCrawl 云端域名特征查询服务提供以下主要功能模块的API：
 **请求体**:
 ```json
 {
-    "annotations": {
-        "elements": [
-            {"id": "1", "type": "header", "xpath": "//header"},
-            {"id": "2", "type": "main", "xpath": "//main"},
-            {"id": "3", "type": "footer", "xpath": "//footer"}
-        ]
-    },
+    "annotations": "<annotation><element id='1' type='header' xpath='//header'/><element id='2' type='main' xpath='//main'/><element id='3' type='footer' xpath='//footer'/></annotation>",
     "status": "completed",
     "notes": "更新后的标注"
 }
@@ -222,15 +221,11 @@ RealCrawl 云端域名特征查询服务提供以下主要功能模块的API：
 ```json
 {
     "id": 1,
+    "user_id": "user123",
     "domain": "example.com",
+    "url": "https://example.com/page1",
     "layout_id": "example.com_01",
-    "annotations": {
-        "elements": [
-            {"id": "1", "type": "header", "xpath": "//header"},
-            {"id": "2", "type": "main", "xpath": "//main"},
-            {"id": "3", "type": "footer", "xpath": "//footer"}
-        ]
-    },
+    "annotations": "<annotation><element id='1' type='header' xpath='//header'/><element id='2' type='main' xpath='//main'/><element id='3' type='footer' xpath='//footer'/></annotation>",
     "type": "manual",
     "status": "completed",
     "notes": "更新后的标注",
@@ -246,7 +241,6 @@ RealCrawl 云端域名特征查询服务提供以下主要功能模块的API：
 **响应**:
 ```json
 {
-    "status": "success",
     "message": "标注删除成功"
 }
 ```
@@ -264,38 +258,10 @@ RealCrawl 云端域名特征查询服务提供以下主要功能模块的API：
 **响应**:
 ```json
 {
-    "status": "success",
-    "message": "标注已成功分享到公共库"
+    "message": "标注分享成功"
 }
 ```
 
-#### POST /compare
-与公共库对比
-
-**请求体**:
-```json
-{
-    "annotation_id": 1,
-    "domain": "target-domain.com"
-}
-```
-
-**响应**:
-```json
-{
-    "annotation_id": 1,
-    "domain": "target-domain.com",
-    "similarity_score": 0.85,
-    "differences": [
-        {
-            "type": "missing_element",
-            "xpath": "//nav",
-            "description": "目标域名缺少导航元素"
-        }
-    ],
-    "matched_features": ["header", "main", "footer"]
-}
-```
 
 #### GET /stats
 获取标注统计
@@ -367,6 +333,20 @@ RealCrawl 云端域名特征查询服务提供以下主要功能模块的API：
     },
     "timestamp": "2024-01-01T12:00:00Z",
     "request_id": "req_1234567890"
+}
+```
+
+#### 权限不足 (403)
+```json
+{
+    "detail": "无权限访问此标注"
+}
+```
+
+#### 用户未认证 (401)
+```json
+{
+    "detail": "用户ID未提供"
 }
 ```
 

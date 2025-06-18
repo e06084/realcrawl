@@ -6,8 +6,8 @@ RealCrawl云端域名特征查询服务专注于核心的数据管理功能，�
 
 1. **公共特征库**: 存储和查询海量域名布局特征数据（对应生产过程形成特征库）
 2. **HTML标注工具**: 可视化HTML标注界面，支持重标注、检索、对比功能  
-3. **私有标注库**: 个人标注管理，支持：
-   - 我的标注（增删改查）
+3. **标注库**: 标注管理，支持：
+   - 标注管理（增删改查）
    - 共享到公共库
    - 对比公共库
 
@@ -28,11 +28,11 @@ RealCrawl云端域名特征查询服务专注于核心的数据管理功能，�
 │   └── 管理控制台 (React) - 特征库查询管理
 ├── API服务层 (包含业务逻辑)
 │   ├── 特征库API - 公共特征读写和管理逻辑
-│   └── 标注库API - 私有标注管理和对比逻辑
+│   └── 标注库API - 标注管理和对比逻辑
 └── 数据存储层
     ├── Redis Cluster (特征库缓存集群)
     ├── S3/OSS (HTML内容存储)
-    └── PostgreSQL (私有标注数据)
+    └── PostgreSQL (标注数据)
 ```
 
 ## 功能模块
@@ -49,9 +49,9 @@ RealCrawl云端域名特征查询服务专注于核心的数据管理功能，�
 - **对比功能**: 与公共库特征智能对比
 - **检索功能**: 快速搜索和过滤标注数据
 
-### 3. 私有标注库管理
-- **标注存储**: PostgreSQL存储私有标注数据
-- **共享机制**: 将个人标注分享到公共特征库
+### 3. 标注库管理
+- **标注存储**: PostgreSQL存储标注数据
+- **共享机制**: 将标注分享到公共特征库
 - **对比分析**: 标注与公共库特征的相似度分析
 - **版本管理**: 标注历史版本追踪
 
@@ -158,8 +158,8 @@ HTTP请求 → api/ → db/ → 数据库
 - `POST /api/v1/domains/{domain}` - 创建/更新域名特征
 - `DELETE /api/v1/domains/{domain}` - 删除域名特征
 
-### 标注库API（私有标注管理）
-- `GET /api/v1/annotations` - 获取我的标注列表（检索功能）
+### 标注库API（标注管理）
+- `GET /api/v1/annotations` - 获取标注列表（检索功能）
 - `POST /api/v1/annotations` - 创建标注（重标注功能）
 - `GET /api/v1/annotations/{annotation_id}` - 获取标注详情
 - `PUT /api/v1/annotations/{annotation_id}` - 更新标注
@@ -183,7 +183,7 @@ class LayoutInfo:
     timestamp: int                 # 时间戳
 ```
 
-### 私有标注模型（存储在PostgreSQL）
+### 标注模型（存储在PostgreSQL）
 ```python
 class Annotation:
     id: int                        # 标注ID
@@ -247,7 +247,7 @@ docker-compose up -d
 - **压缩比**: 90%以上空间节省
 
 ### PostgreSQL标注存储
-- **表结构**: annotations表存储私有标注
+- **表结构**: annotations表存储标注数据
 - **索引优化**: domain, created_at复合索引
 
 ### S3/OSS HTML存储  

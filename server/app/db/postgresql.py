@@ -7,10 +7,7 @@ import asyncpg
 import json
 from typing import Optional, List, Dict, Any
 from datetime import datetime
-import sys
-import os
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../'))
-from config.settings import settings
+from ..config.settings import settings
 from ..models.annotation import (
     AnnotationCreate,
     AnnotationUpdate,

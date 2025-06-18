@@ -27,7 +27,7 @@ class Settings(BaseSettings):
     REDIS_DB: int = 0
     REDIS_MAX_CONNECTIONS: int = 100
     
-    # PostgreSQL配置 - 私有标注数据
+    # PostgreSQL配置 - 标注数据
     POSTGRES_HOST: str = "localhost"
     POSTGRES_PORT: int = 5432
     POSTGRES_DB: str = "realcrawl"
@@ -50,7 +50,6 @@ class Settings(BaseSettings):
     # 限流配置
     RATE_LIMIT_ENABLED: bool = True
     DEFAULT_RATE_LIMIT: int = 1000  # 每小时默认限制
-    API_KEY_RATE_LIMIT: int = 10000  # API密钥每小时限制
     
     # 监控配置
     ENABLE_METRICS: bool = True
@@ -88,4 +87,4 @@ class Settings(BaseSettings):
         env_file_encoding = "utf-8"
 
 # 全局配置实例
-settings = Settings() 
+settings = Settings()

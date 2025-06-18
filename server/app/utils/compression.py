@@ -6,10 +6,7 @@
 import zlib
 import json
 from typing import Any, Union, Dict
-import sys
-import os
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../'))
-from config.settings import settings
+from ..config.settings import settings
 
 
 class CompressionError(Exception):
